@@ -1,4 +1,4 @@
-#== Jesus Saves Us ==
+# Variables that are used globally
 Appurl = 'http://usa-lifstrwap05/str8/en-us/login'
 UserName = 'Prasad'
 Password = 'test'
