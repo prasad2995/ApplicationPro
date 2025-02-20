@@ -6,6 +6,7 @@ import GlobalVariables
 import IntializeDriver
 import os
 import Screens.PageNavigator as PageNavigator
+import Utilities
 
 driver = IntializeDriver.driver
 
@@ -37,12 +38,15 @@ def personal_information(driver, data):
 
     #Selection for question "Have you ever used any form of tobacco, nicotine-based products, nicotine substitutes, or nicotine delivery systems?*"
     WebElements.click_button(driver, 'data[Tobacco]')
+    Utilities.take_screenshot()
 
 
 def employment_information(driver, data):
-    WebElements.select_checkbox(driver, 'Work Status', data['Work_Status'])
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    sleep(2)
+    WebElements.select_value(driver, 'Work Status', data['Work_Status'])
     if data['Work_Status'] == 'Employed':
-        sleep(3)
+        WebElements.wait_until_ele_load(driver, "//label//span[text()='Occupational Duties']/..//parent::div//child::lf-select")
         WebElements.select_value(driver, 'Occupational Duties', data['Occupational_Duties'])
         WebElements.enter_text(driver, 'Employer Name', data['Employer_Name'])
         WebElements.enter_text(driver, 'Employer Address Line 1', data['Employer_Address_Line_1'])
@@ -52,16 +56,19 @@ def employment_information(driver, data):
         WebElements.enter_text(driver, 'Zip Code', data['Zip_Code'])
     if data['Work_Status'] == 'Other':
         WebElements.enter_text(driver, 'Other', data['Other'])
+    Utilities.take_screenshot()
 
 
 def additional_information(driver, data):
-    WebElements.select_checkbox(driver, 'Citizenship', data['Citizenship'])
-    WebElements.select_checkbox(driver, 'Country of Birth', data['Country_of_Birth'])
+    WebElements.select_value(driver, 'Citizenship', data['Citizenship'])
+    WebElements.select_value(driver, 'Country of Birth', data['Country_of_Birth'])
     if data['Country_of_Birth'] == 'United States Of America':
-        WebElements.select_checkbox(driver, 'State of Birth', data['State_of_Birth'])
+        WebElements.wait_until_ele_load(driver, "//label//span[text()='State of Birth']/..//parent::div//child::lf-select")
+        WebElements.select_value(driver, 'State of Birth', data['State_of_Birth'])
     WebElements.enter_text(driver, 'Driver License Number', data['Driver_License_Number'])
-    WebElements.enter_text(driver, 'State of Issue', data['State_of_Issue'])
+    # WebElements.enter_text(driver, 'State of Issue', data['State_of_Issue'])
     sleep(10)
+    Utilities.take_screenshot()
 
 
 
