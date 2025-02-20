@@ -1,6 +1,6 @@
-import AppPro.Screens.LoginPage as LoginPage
-import AppPro.Screens.CreateNewApplication as CreateNewApplication
-import AppPro.Screens.PrimaryInsured as PrimaryInsured
+import Screens.LoginPage as LoginPage
+import Screens.CreateNewApplication as CreateNewApplication
+import Screens.PrimaryInsured as PrimaryInsured
 
 def navigate_screens(screen_name):
     if screen_name == 'LoginPage':

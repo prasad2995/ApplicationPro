@@ -1,4 +1,4 @@
-from AppPro.Screens import LoginPage
+from Screens import LoginPage
 
 LoginPage.Execute()
 # CreateApplication.Execute()

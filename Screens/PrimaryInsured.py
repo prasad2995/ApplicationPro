@@ -1,11 +1,11 @@
 from selenium.webdriver.common.by import By
 import pandas as pd
 from time import sleep
-import AppPro.WebElements as WebElements
-import AppPro.GlobalVariables as GlobalVariables
-import AppPro.IntializeDriver as IntializeDriver
+import WebElements
+import GlobalVariables
+import IntializeDriver
 import os
-import AppPro.Screens.PageNavigator as PageNavigator
+import Screens.PageNavigator as PageNavigator
 
 driver = IntializeDriver.driver
 
