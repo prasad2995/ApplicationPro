@@ -51,7 +51,7 @@ def choose_button(driver, element):
 def enter_text(driver, element, input_text):
     try:
         if element.startswith("xpath="):
-            element = element.replace("xpath", "", 1).strip()
+            element = element.replace("xpath=", "", 1).strip()
         else:
             element = "//span[text()='" + element + "']/..//..//child::input"
 

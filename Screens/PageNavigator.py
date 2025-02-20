@@ -9,3 +9,6 @@ def navigate_screens(screen_name):
         CreateNewApplication.Execute()
     if screen_name == 'PrimaryInsured':
         PrimaryInsured.Execute()
+    if screen_name == 'ProductSelection':
+        ProductSelection.Execute()
+

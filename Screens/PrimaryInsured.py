@@ -34,7 +34,36 @@ def personal_information(driver, data):
     WebElements.select_value(driver, 'Marital Status', data['Marital_Status'])
     WebElements.enter_text(driver, 'xpath=//input[@aria-label="Centimeters"]', data['Height'])
     WebElements.enter_text(driver, 'xpath=//input[@aria-label="Kilograms"]', data['Weight'])
+
+    #Selection for question "Have you ever used any form of tobacco, nicotine-based products, nicotine substitutes, or nicotine delivery systems?*"
+    WebElements.click_button(driver, 'data[Tobacco]')
+
+
+def employment_information(driver, data):
+    WebElements.select_checkbox(driver, 'Work Status', data['Work_Status'])
+    if data['Work_Status'] == 'Employed':
+        sleep(3)
+        WebElements.select_value(driver, 'Occupational Duties', data['Occupational_Duties'])
+        WebElements.enter_text(driver, 'Employer Name', data['Employer_Name'])
+        WebElements.enter_text(driver, 'Employer Address Line 1', data['Employer_Address_Line_1'])
+        WebElements.enter_text(driver, 'Employer Address Line 2', data['Employer_Address_Line_2'])
+        WebElements.enter_text(driver, 'City', data['City'])
+        WebElements.select_value(driver, 'State', data['State'])
+        WebElements.enter_text(driver, 'Zip Code', data['Zip_Code'])
+    if data['Work_Status'] == 'Other':
+        WebElements.enter_text(driver, 'Other', data['Other'])
+
+
+def additional_information(driver, data):
+    WebElements.select_checkbox(driver, 'Citizenship', data['Citizenship'])
+    WebElements.select_checkbox(driver, 'Country of Birth', data['Country_of_Birth'])
+    if data['Country_of_Birth'] == 'United States Of America':
+        WebElements.select_checkbox(driver, 'State of Birth', data['State_of_Birth'])
+    WebElements.enter_text(driver, 'Driver License Number', data['Driver_License_Number'])
+    WebElements.enter_text(driver, 'State of Issue', data['State_of_Issue'])
     sleep(10)
+
+
 
 
 
@@ -55,10 +84,14 @@ def Execute():
     sheet_name = os.path.splitext(os.path.basename(__file__))[0]
     data = read_excel_data(sheet_name)
     personal_information(driver, data)
-    if 'Next Screen' in data:
-        if data['NextScreen']:
-            PageNavigator.navigate_screens(data['NextScreen'])
+    employment_information(driver, data)
+    additional_information(driver, data)
+    next_screen = data.get('NextScreen')  # Using .get() to avoid KeyError
+    if next_screen:
+        if next_screen == 'End':
+            print(f'Application creation has stopped on {sheet_name} screen')
         else:
-            print(f'Warning: Next Screen column is missing in {sheet_name} sheet')
+            PageNavigator.navigate_screens(next_screen)
     else:
-        print(f'Error - ')
+        print(f'Warning: "NextScreen" column is missing in {sheet_name} sheet')
+
