@@ -1,6 +1,7 @@
 import Screens.LoginPage as LoginPage
 import Screens.CreateNewApplication as CreateNewApplication
 import Screens.PrimaryInsured as PrimaryInsured
+import Screens.ProductSelection as ProductSelection
 
 def navigate_screens(screen_name):
     if screen_name == 'LoginPage':

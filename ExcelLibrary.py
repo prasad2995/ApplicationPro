@@ -1,11 +1,6 @@
-from selenium.webdriver.common.by import By
 import pandas as pd
-from time import sleep
-import WebElements
 import GlobalVariables
-import IntializeDriver
-import os
-import Screens.PageNavigator as PageNavigator
+
 
 def read_excel_data(sheet_name):
     # Load the Excel sheet

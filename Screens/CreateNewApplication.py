@@ -63,5 +63,5 @@ def Execute():
     sheet_name = os.path.splitext(os.path.basename(__file__))[0]
     data = read_excel_data(sheet_name)
     create_application(driver, data)
-    PageNavigator.navigate_screens(data['NextScreen'])
+    PageNavigator.navigate_screens(data['Next_Screen'])
 

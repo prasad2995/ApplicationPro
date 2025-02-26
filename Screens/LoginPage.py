@@ -46,7 +46,7 @@ def Execute():
     sheet_name = os.path.splitext(os.path.basename(__file__))[0]
     data = read_excel_data(sheet_name)
     login(driver, data)
-    PageNavigator.navigate_screens(data['NextScreen'])
+    PageNavigator.navigate_screens(data['Next_Screen'])
 
 def end_execution():
     driver.quit()

@@ -1,29 +1,41 @@
 from time import sleep
-
 from selenium.common import NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 import GlobalVariables
+import IntializeDriver
 
+driver = IntializeDriver.driver
+# Scroll to the element using ActionChains
+actions = ActionChains(driver)
 
 # Functions starts from here
 
 def click_button(driver, button_name):
+    index = '1'
+
     try:
+        if "_" in button_name:
+            button_name, index = button_name.rsplit("_", 1)
         # Try different XPath variations
         possible_xpaths = [
-            f"//button//span[text()='{button_name}']",
-            f"//button[text()='{button_name}']"
+            f"(//button//span[text()='{button_name}'])[{index}]",
+            f"(//button[text()='{button_name}'])[{index}]"
         ]
 
         element = None
         for xpath in possible_xpaths:
             element = driver.find_element(By.XPATH, xpath)
             if element:
+                # Scroll to the element
+                actions.move_to_element(element).perform()
                 element.click()
                 print(f'Clicked on "{button_name}"')
+                break
+        raise NoSuchElementException(f'{button_name} button not found')
 
     except NoSuchElementException as e:
         print(f'Element not found. {e}')
@@ -52,11 +64,17 @@ def enter_text(driver, element, input_text):
     try:
         if element.startswith("xpath="):
             element = element.replace("xpath=", "", 1).strip()
+        elif "_" in element:
+            element, index = element.split("_")
+            element = f"(//span[text()='{element}']/..//..//child::input)[{index}]"
         else:
-            element = "//span[text()='" + element + "']/..//..//child::input"
+            element = f"//span[text()='{element}']/..//..//child::input"
 
-        driver.find_element('xpath', element).send_keys(input_text)
-        print(f'Text is entered in {element} field')
+        element = driver.find_element('xpath', element)
+        actions.move_to_element(element).perform()
+        element.clear()
+        element.send_keys(input_text)
+        print(f'Text entered in {element} field')
 
     except NoSuchElementException as e:
         print(f'{element} not found. {e}')
@@ -64,8 +82,10 @@ def enter_text(driver, element, input_text):
 
 def select_checkbox(driver, element_name, state):
     try:
-        element = "//lpla-fd-checkbox[@label='"+ element_name +"']//lf-checkbox"
+        # element = "//lpla-fd-checkbox[@label='"+ element_name +"']//lf-checkbox"
+        element = f'//span[text()="{element_name}"]//..//..//lf-checkbox'
         checkbox = driver.find_element(By.XPATH, element)
+        actions.move_to_element(checkbox).perform()
         if not checkbox.is_selected():
             checkbox.click()
             print(f'Selected the checkbox {element_name}')
@@ -79,7 +99,9 @@ def select_checkbox(driver, element_name, state):
 def select_value(driver, element, value):
     try:
         element_xpath = "//label//span[text()='"+ element +"']/..//parent::div//child::lf-select"
-        driver.find_element(By.XPATH, element_xpath).click()
+        element = driver.find_element(By.XPATH, element_xpath)
+        actions.move_to_element(element).perform()
+        element.click()
 
         possible_xpaths = [
             f'//lf-dropdown-panel//span[text()="{value}"]',
@@ -100,3 +122,14 @@ def select_value(driver, element, value):
             print(f'{element} not found to select')
     except NoSuchElementException as e:
         print(f'{element} not found. {e}')
+
+
+def click_left_nav_menu(driver, menu_name):
+    try:
+        element = f"//li[@role='menuitem']//span[text()='{menu_name}']"
+        element = driver.find_element(By.XPATH, element)
+        actions.move_to_element(element).perform()
+        element.click()
+
+    except NoSuchElementException as e:
+        print(f'Error: Left navigation menu item {menu_name} is not found - {e}')
