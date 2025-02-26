@@ -10,6 +10,8 @@ import os
 import Screens.PageNavigator as PageNavigator
 import sys
 import IntializeDriver
+import logging
+logging.basicConfig(level=logging.ERROR)
 
 driver = IntializeDriver.driver
 
@@ -18,7 +20,7 @@ def product_selection(driver, data):
         print(f'No data to be filled in {sys._getframe().f_code.co_name}')
 
     except NoSuchElementException as e:
-        print(f'Error: Failed at Product Selection section - {e}')
+        logging.error(f'Error: Failed at Product Selection section - {e}')
 
 def product_information(driver, data):
     try:
@@ -27,7 +29,7 @@ def product_information(driver, data):
         WebElements.select_value(driver, 'Payment Mode', data['Payment_Mode'])
 
     except NoSuchElementException as e:
-        print(f'Error - Failed at Product Information section - {e}')
+        logging.error(f'Error - Failed at Product Information section - {e}')
 
 
 def rider(driver, data):
@@ -35,17 +37,20 @@ def rider(driver, data):
         WebElements.select_checkbox(driver, 'Waiver of Premium', data['Waiver_of_Premium'])
         WebElements.select_checkbox(driver, 'Accidental Death Benefit', data['Accidental_Death_Benefit'])
         if data['Accidental_Death_Benefit'] == 'Yes':
+            sleep(2)
             WebElements.enter_text(driver, 'Amount_1', data['Accidental_Death_Benefit_Amount'])
         WebElements.select_checkbox(driver, 'Primary Insured Rider', data['Primary_Insured_Rider'])
         if data['Primary_Insured_Rider'] == 'Yes':
+            sleep(2)
             WebElements.enter_text(driver, 'Amount_2', data['Primary_Insured_Rider_Amount'])
         WebElements.select_checkbox(driver, 'Childrens Insurance Rider', data['Childrens_Insurance_Rider'])
         if data['Childrens_Insurance_Rider'] == 'Yes':
+            sleep(2)
             WebElements.enter_text(driver, 'Units', data['Childrens_Insurance_Rider_Units'])
         WebElements.select_checkbox(driver, 'Other Insured Rider', data['Other_Insured_Rider'])
 
     except NoSuchElementException as e:
-        print(f'Error: Failed at rider selection - {e}')
+        logging.error(f'Error: Failed at rider selection - {e}')
 
 def Execute():
     sheet_name = os.path.splitext(os.path.basename(__file__))[0]
@@ -63,7 +68,7 @@ def Execute():
             else:
                 PageNavigator.navigate_screens(next_screen)
         else:
-            print(f'Warning: "Next_Screen" column is missing in {sheet_name} sheet')
+            logging.warning(f'Warning: "Next_Screen" column is missing in {sheet_name} sheet')
     except:
         Utilities.take_screenshot()
-        print(f'Application creation failed at {sheet_name} screen')
+        logging.error(f'Application creation failed at {sheet_name} screen')

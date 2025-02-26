@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 import GlobalVariables
 import IntializeDriver
+import logging
 
 driver = IntializeDriver.driver
 # Scroll to the element using ActionChains
@@ -34,11 +35,12 @@ def click_button(driver, button_name):
                 actions.move_to_element(element).perform()
                 element.click()
                 print(f'Clicked on "{button_name}"')
-                break
+                return  # Exit the function after clicking
+
         raise NoSuchElementException(f'{button_name} button not found')
 
     except NoSuchElementException as e:
-        print(f'Element not found. {e}')
+        logging.ERROR(f'Element not found. {e}')
 
 
 def wait_until_ele_load(driver,element):
@@ -47,7 +49,7 @@ def wait_until_ele_load(driver,element):
             EC.element_to_be_clickable(('xpath', element)))
 
     except NoSuchElementException as e:
-        print(f'element not found. {e}')
+        logging.ERROR(f'element not found. {e}')
 
 
 def choose_button(driver, element):
@@ -57,27 +59,27 @@ def choose_button(driver, element):
         print(f'{element} selected')
 
     except NoSuchElementException as e:
-        print(f'{element} not found. {e}')
+        logging.ERROR(f'{element} not found. {e}')
 
 
-def enter_text(driver, element, input_text):
+def enter_text(driver, element_name, input_text):
     try:
-        if element.startswith("xpath="):
-            element = element.replace("xpath=", "", 1).strip()
-        elif "_" in element:
-            element, index = element.split("_")
+        if element_name.startswith("xpath="):
+            element = element_name.replace("xpath=", "", 1).strip()
+        elif "_" in element_name:
+            element, index = element_name.split("_")
             element = f"(//span[text()='{element}']/..//..//child::input)[{index}]"
         else:
-            element = f"//span[text()='{element}']/..//..//child::input"
+            element = f"//span[text()='{element_name}']/..//..//child::input"
 
         element = driver.find_element('xpath', element)
         actions.move_to_element(element).perform()
         element.clear()
         element.send_keys(input_text)
-        print(f'Text entered in {element} field')
+        print(f'Text entered in {element_name} field')
 
     except NoSuchElementException as e:
-        print(f'{element} not found. {e}')
+        logging.ERROR(f'{element_name} not found. {e}')
 
 
 def select_checkbox(driver, element_name, state):
@@ -90,16 +92,24 @@ def select_checkbox(driver, element_name, state):
             checkbox.click()
             print(f'Selected the checkbox {element_name}')
         else:
-            print(f'{element_name} is already selected')
+            logging.warning(f'{element_name} is already selected')
 
     except Exception as e:
-        print(f'Error: Check box is not selectable - {e}')
+        logging.ERROR(f'Error: Check box is not selectable - {e}')
 
 
-def select_value(driver, element, value):
+def select_value(driver, element_name, value):
+    index = '1'
     try:
-        element_xpath = "//label//span[text()='"+ element +"']/..//parent::div//child::lf-select"
-        element = driver.find_element(By.XPATH, element_xpath)
+        if element_name.startswith("xpath="):
+            element = element_name.replace("xpath=", "", 1).strip()
+        elif "_" in element_name:
+            element, index = element_name.split("_")
+            element = f"(//label//span[text()='{element}']/..//parent::div//child::lf-select)[{index}]"
+        else:
+            element = f"//label//span[text()='{element_name}']/..//parent::div//child::lf-select"
+
+        element = driver.find_element(By.XPATH, element)
         actions.move_to_element(element).perform()
         element.click()
 
@@ -117,11 +127,12 @@ def select_value(driver, element, value):
 
         if element:
             element.click()
-            print(f'Selected the value {element}')
+            print(f'Selected the {value} in {element_name} dropdown')
         else:
-            print(f'{element} not found to select')
+            logging.warning(f'{value} is not available to select in {element_name} dropdown')
+
     except NoSuchElementException as e:
-        print(f'{element} not found. {e}')
+        logging.ERROR(f'{element_name} not found. {e}')
 
 
 def click_left_nav_menu(driver, menu_name):
@@ -132,4 +143,4 @@ def click_left_nav_menu(driver, menu_name):
         element.click()
 
     except NoSuchElementException as e:
-        print(f'Error: Left navigation menu item {menu_name} is not found - {e}')
+        logging.ERROR(f'Error: Left navigation menu item {menu_name} is not found - {e}')
