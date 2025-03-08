@@ -8,20 +8,33 @@ from selenium.webdriver.common.action_chains import ActionChains
 import GlobalVariables
 import IntializeDriver
 import logging
+import os
+import webbrowser
 
+# Initialize driver
 driver = IntializeDriver.driver
+
+# Set up logging
+log_file = "execution_log.html"
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[logging.FileHandler(log_file, mode="w"), logging.StreamHandler()]
+)
+
 # Scroll to the element using ActionChains
 actions = ActionChains(driver)
 
-# Functions starts from here
+
+# Functions start here
 
 def click_button(driver, button_name):
     index = '1'
-
     try:
         if "_" in button_name:
             button_name, index = button_name.rsplit("_", 1)
-        # Try different XPath variations
+
         possible_xpaths = [
             f"(//button//span[text()='{button_name}'])[{index}]",
             f"(//button[text()='{button_name}'])[{index}]"
@@ -31,35 +44,25 @@ def click_button(driver, button_name):
         for xpath in possible_xpaths:
             element = driver.find_element(By.XPATH, xpath)
             if element:
-                # Scroll to the element
                 actions.move_to_element(element).perform()
                 element.click()
-                print(f'Clicked on "{button_name}"')
-                return  # Exit the function after clicking
+                logging.info(f'Clicked on "{button_name}"')
+                return
 
         raise NoSuchElementException(f'{button_name} button not found')
 
     except NoSuchElementException as e:
-        logging.ERROR(f'Element not found. {e}')
+        logging.error(f'Element not found: {e}')
 
 
-def wait_until_ele_load(driver,element):
+def wait_until_ele_load(driver, element):
     try:
         WebDriverWait(driver, GlobalVariables.EleWaitTimeout).until(
-            EC.element_to_be_clickable(('xpath', element)))
+            EC.element_to_be_clickable((By.XPATH, element)))
+        logging.info(f'Element {element} is clickable now')
 
     except NoSuchElementException as e:
-        logging.ERROR(f'element not found. {e}')
-
-
-def choose_button(driver, element):
-    try:
-        element = "//lf-radiobutton[@value='newClient']//child::span/.."
-        driver.find_element('xpath', element).click()
-        print(f'{element} selected')
-
-    except NoSuchElementException as e:
-        logging.ERROR(f'{element} not found. {e}')
+        logging.error(f'Element not found: {e}')
 
 
 def enter_text(driver, element_name, input_text):
@@ -72,30 +75,30 @@ def enter_text(driver, element_name, input_text):
         else:
             element = f"//span[text()='{element_name}']/..//..//child::input"
 
-        element = driver.find_element('xpath', element)
+        element = driver.find_element(By.XPATH, element)
         actions.move_to_element(element).perform()
         element.clear()
         element.send_keys(input_text)
-        print(f'Text entered in {element_name} field')
+        logging.info(f'Text "{input_text}" entered in "{element_name}" field')
 
     except NoSuchElementException as e:
-        logging.ERROR(f'{element_name} not found. {e}')
+        logging.error(f'{element_name} not found: {e}')
 
 
 def select_checkbox(driver, element_name, state):
     try:
-        # element = "//lpla-fd-checkbox[@label='"+ element_name +"']//lf-checkbox"
         element = f'//span[text()="{element_name}"]//..//..//lf-checkbox'
         checkbox = driver.find_element(By.XPATH, element)
         actions.move_to_element(checkbox).perform()
         if not checkbox.is_selected():
             checkbox.click()
-            print(f'Selected the checkbox {element_name}')
+            logging.info(f'Selected the checkbox "{element_name}"')
         else:
-            logging.warning(f'{element_name} is already selected')
+            logging.warning(f'Checkbox "{element_name}" is already selected')
 
     except Exception as e:
-        logging.ERROR(f'Error: Check box is not selectable - {e}')
+        logging.error(f'Error: Check box "{element_name}" is not selectable - {e}')
+
 
 
 def select_value(driver, element_name, value):
@@ -127,12 +130,51 @@ def select_value(driver, element_name, value):
 
         if element:
             element.click()
-            print(f'Selected the {value} in {element_name} dropdown')
+            logging.info(f'Selected "{value}" in "{element_name}" dropdown')
         else:
-            logging.warning(f'{value} is not available to select in {element_name} dropdown')
+            logging.warning(f'Value "{value}" is not available in "{element_name}" dropdown')
 
     except NoSuchElementException as e:
-        logging.ERROR(f'{element_name} not found. {e}')
+        logging.error(f'{element_name} not found: {e}')
+
+def button_select_value(driver, element_name, value):
+    index = '1'
+    try:
+        if element_name.startswith("xpath="):
+            element = element_name.replace("xpath=", "", 1).strip()
+        elif "_" in element_name:
+            element, index = element_name.split("_")
+            element = f"(//button[@aria-label='{element}'])[{index}]"
+        else:
+            element = f"//button[@aria-label='{element_name}']"
+
+        element = driver.find_element(By.XPATH, element)
+        actions.move_to_element(element).perform()
+        element.click()
+
+        # possible_xpaths = [
+        #     f'//lf-dropdown-panel//span[text()="{value}"]',
+        #     f'//lf-select//span[text()="{value}"]',
+        #     f'//lf-tiered-menu-sub//span[text()="{value}"]'
+        # ]
+        #
+        # for xpath in possible_xpaths:
+        #     try:
+        #         element = driver.find_element(By.XPATH, xpath)
+        #         break
+        #     except NoSuchElementException:
+        #         continue
+
+        element_xpath = f'//lf-tiered-menu-sub//span[text()="{value}"]'
+        element = driver.find_element(By.XPATH, element_xpath)
+        if element:
+            element.click()
+            logging.info(f'Selected "{value}" in "{element_name}" dropdown')
+        else:
+            logging.warning(f'Value "{value}" is not available in "{element_name}" dropdown')
+
+    except NoSuchElementException as e:
+        logging.error(f'{element_name} not found: {e}')
 
 
 def click_left_nav_menu(driver, menu_name):
@@ -141,6 +183,7 @@ def click_left_nav_menu(driver, menu_name):
         element = driver.find_element(By.XPATH, element)
         actions.move_to_element(element).perform()
         element.click()
+        logging.info(f'Clicked on menu "{menu_name}"')
 
     except NoSuchElementException as e:
-        logging.ERROR(f'Error: Left navigation menu item {menu_name} is not found - {e}')
+        logging.error(f'Error: Left navigation menu item "{menu_name}" not found - {e}')

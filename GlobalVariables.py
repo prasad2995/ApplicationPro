@@ -4,3 +4,5 @@ UserName = 'Prasad'
 Password = 'test'
 EleWaitTimeout = 20
 excel_path = "TestData/ApplicationPro_DataFeed.xlsx"
+ownerIsInsured = ''
+payorIsInsured = ''
