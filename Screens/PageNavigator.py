@@ -1,15 +1,16 @@
-import Screens.LoginPage as LoginPage
-import Screens.CreateNewApplication as CreateNewApplication
-import Screens.PrimaryInsured as PrimaryInsured
-import Screens.ProductSelection as ProductSelection
-import Screens.Owner as Owner
-import Screens.Payor as Payor
-import Screens.Beneficiary as Beneficiary
-import Screens.ExistingInsurance as ExistingInsurance
-import Screens.PaymentInformation as PaymentInformation
-import Screens.PhysicianInformation as PhysicianInformation
-import Screens.UnderwritingQuestions as UnderwritingQuestions
-import Screens.SupplementalForms as SupplementalForms
+from Screens import LoginPage
+from Screens import CreateNewApplication
+from Screens import PrimaryInsured
+from Screens import ProductSelection
+from Screens import Owner
+from Screens import Payor
+from Screens import Beneficiary
+from Screens import ExistingInsurance
+from Screens import PaymentInformation
+from Screens import PhysicianInformation
+from Screens import UnderwritingQuestions
+from Screens import SupplementalForms
+from Screens import CompleteApplication
 
 
 def navigate_screens(screen_name):
@@ -37,5 +38,7 @@ def navigate_screens(screen_name):
         UnderwritingQuestions.Execute()
     if screen_name == 'SupplementalForms':
         SupplementalForms.Execute()
+    if screen_name == 'CompleteApplication':
+        CompleteApplication.Execute()
 
 

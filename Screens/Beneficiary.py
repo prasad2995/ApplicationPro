@@ -19,7 +19,7 @@ def add_beneficiary(driver, data):
         WebElements.button_select_value(driver, 'Add Beneficiary', data['Relationship'])
         sleep(2)
 
-    except NoSuchElementException as e:
+    except Exception as e:
         logging.error(f'Error: Failed at adding Beneficiary - {e}')
         Utilities.take_screenshot(sheet_name, 'error')
 
@@ -27,10 +27,11 @@ def beneficiary_relationship(driver, data):
     try:
         WebElements.select_value(driver, 'Beneficiary Level', data['Beneficiary Level'])
         WebElements.enter_text(driver, 'Percentage', data['Percentage'])
+        WebElements.click_button(driver, 'Save')
 
         Utilities.take_screenshot(sheet_name, 'beneficiary_relationship')
 
-    except NoSuchElementException as e:
+    except Exception as e:
         logging.error(f'Error - Failed at entering relationship details - {e}')
         Utilities.take_screenshot(sheet_name, 'error')
 
@@ -51,6 +52,6 @@ def Execute():
                 PageNavigator.navigate_screens(next_screen)
         else:
             logging.warning(f'Warning: "Next_Screen" column is missing in {sheet_name} sheet')
-    except:
+    except Exception as e:
         Utilities.take_screenshot(sheet_name, 'error')
-        logging.error(f'Application creation failed at {sheet_name} screen')
+        logging.error(f'Application creation failed at {sheet_name} screen - {e}')

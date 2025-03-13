@@ -144,26 +144,13 @@ def button_select_value(driver, element_name, value):
             element = element_name.replace("xpath=", "", 1).strip()
         elif "_" in element_name:
             element, index = element_name.split("_")
-            element = f"(//button[@aria-label='{element}'])[{index}]"
+            element = f"(//button//span[text()='{element}'])[{index}]"
         else:
-            element = f"//button[@aria-label='{element_name}']"
+            element = f"//button//span[text()='{element_name}']"
 
         element = driver.find_element(By.XPATH, element)
         actions.move_to_element(element).perform()
         element.click()
-
-        # possible_xpaths = [
-        #     f'//lf-dropdown-panel//span[text()="{value}"]',
-        #     f'//lf-select//span[text()="{value}"]',
-        #     f'//lf-tiered-menu-sub//span[text()="{value}"]'
-        # ]
-        #
-        # for xpath in possible_xpaths:
-        #     try:
-        #         element = driver.find_element(By.XPATH, xpath)
-        #         break
-        #     except NoSuchElementException:
-        #         continue
 
         element_xpath = f'//lf-tiered-menu-sub//span[text()="{value}"]'
         element = driver.find_element(By.XPATH, element_xpath)
@@ -187,3 +174,71 @@ def click_left_nav_menu(driver, menu_name):
 
     except NoSuchElementException as e:
         logging.error(f'Error: Left navigation menu item "{menu_name}" not found - {e}')
+
+
+def verify_text(text):
+    try:
+        element_name = f"//div[text()='{text}']"
+        element = driver.find_element(element_name).is_displayed()
+        if element:
+            logging.info(f'The text "{element_name}" is available in UI')
+        else:
+            logging.error(f'The text "{element_name}" is not available in UI')
+
+    except NoSuchElementException as e:
+        logging.error(f'Error: Failed at verifying text - {e}')
+
+def closeLastOpenedWindow():
+    try:
+        sleep(5)
+        window_handles = driver.window_handles
+        window_count = len(window_handles)  # Get the number of open windows
+        logging.info(f'Total windows open: {window_count}')
+        windowIndexNumber = window_count - 1
+
+        driver.switch_to.window(window_handles[windowIndexNumber])
+        driver.close()
+        sleep(1)
+        driver.switch_to.window(window_handles[0])
+
+    except Exception as e:
+        logging.error(f'Failed to switch between windows - {e}')
+
+
+def signatue():
+    try:
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        sleep(5)
+        # Locate the canvas element
+        canvas = driver.find_element(By.ID, "signature")
+
+        # element = "//button[@title='Apply My Signature ']"
+        # actions = ActionChains
+        # actions.move_to_element(element)
+
+        # Get canvas location and size
+        canvas_location = canvas.location
+        canvas_size = canvas.size
+        start_x = canvas_location['x'] + 10  # Offset to start within the canvas
+        start_y = canvas_location['y'] + 10  # Offset to start within the canvas
+
+        # Create an ActionChain for drawing
+        actions = ActionChains(driver)
+        actions.move_to_element_with_offset(canvas, 10, 10)  # Move to starting position
+        actions.click_and_hold()  # Click and hold to simulate drawing
+
+        for i in range(20):  # Adjust iterations for more curves
+            actions.move_by_offset(15, -10)  # Move right-up
+            actions.move_by_offset(10, 15)  # Move right-down
+            actions.move_by_offset(-15, 10)  # Move left-down
+            actions.move_by_offset(-10, -15)  # Move left-up
+
+        actions.release()  # Release the mouse button
+        actions.perform()  # Execute the action
+
+        # Wait and close browser (Optional)
+        sleep(3)
+        logging.info(f'Signed successfully')
+
+    except Exception as e:
+        logging.error(f'Failed at signature - {e}')

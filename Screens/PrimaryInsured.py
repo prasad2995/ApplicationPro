@@ -17,6 +17,7 @@ primary_address_line1_xpath = "//span[text()='Primary Address Line 1']/..//..//c
 #fuctions
 def personal_information(driver, data):
     WebElements.wait_until_ele_load(driver, primary_address_line1_xpath)
+    sleep(2)
     WebElements.enter_text(driver, 'Primary Address Line 1', data['Primary_Address_Line_1'])
     WebElements.enter_text(driver, 'Primary Address Line 2', data['Primary_Address_Line_2'])
     WebElements.enter_text(driver, 'City_1', data['City_1'])
@@ -67,7 +68,7 @@ def additional_information(driver, data):
     if data['Country_of_Birth'] == 'United States Of America':
         WebElements.wait_until_ele_load(driver, "//label//span[text()='State of Birth']/..//parent::div//child::lf-select")
         WebElements.select_value(driver, 'State of Birth', data['State_of_Birth'])
-    WebElements.enter_text(driver, 'Driver License Number', data['Driver_License_Number'])
+    # WebElements.enter_text(driver, 'Driver License Number', data['Driver_License_Number'])
     # WebElements.enter_text(driver, 'State of Issue', data['State_of_Issue'])
     Utilities.take_screenshot(sheet_name, 'additional_information')
 

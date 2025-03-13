@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.ERROR)
 
 driver = IntializeDriver.driver
 
-def add_existing_insurance(driver, data):
+def add_supplemental_forms(driver, data):
     try:
         if data['Supplemental Forms'] == 'Yes':
             WebElements.click_button(driver, 'Yes')
@@ -21,7 +21,7 @@ def add_existing_insurance(driver, data):
             print(f'Supplemental forms are not added')
         sleep(2)
 
-    except NoSuchElementException as e:
+    except Exception as e:
         logging.error(f'Error: Failed at selecting Supplemental Forms - {e}')
 
 
@@ -31,7 +31,7 @@ def Execute():
         data = ExcelLibrary.read_excel_data(sheet_name)
         WebElements.click_left_nav_menu(driver, 'Supplemental Forms')
         sleep(5)
-        add_existing_insurance(driver, data)
+        add_supplemental_forms(driver, data)
         next_screen = data.get('Next_Screen')  # Using .get() to avoid KeyError
         if next_screen:
             if next_screen == 'End':

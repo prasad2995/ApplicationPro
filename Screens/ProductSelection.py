@@ -16,7 +16,7 @@ sheet_name = os.path.splitext(os.path.basename(__file__))[0]
 
 def product_selection(driver, data):
     try:
-        print(f'No data to be filled in {sys._getframe().f_code.co_name}')
+        logging.info(f'No data to be filled in {sys._getframe().f_code.co_name}')
 
     except NoSuchElementException as e:
         logging.error(f'Error: Failed at Product Selection section - {e}')
