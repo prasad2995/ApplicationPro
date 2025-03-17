@@ -7,6 +7,9 @@ import IntializeDriver
 import os
 import Screens.PageNavigator as PageNavigator
 import Utilities
+import ExcelLibrary
+import logging
+
 
 driver = IntializeDriver.driver
 sheet_name = os.path.splitext(os.path.basename(__file__))[0]
@@ -73,33 +76,15 @@ def additional_information(driver, data):
     Utilities.take_screenshot(sheet_name, 'additional_information')
 
 
-
-
-
-def read_excel_data(sheet_name):
-    # Load the Excel sheet
-    df = pd.read_excel(GlobalVariables.excel_path, sheet_name)
-
-    # Convert each row to a dictionary and store in a list
-    applications = df.to_dict(orient='records')
-
-    # Example: Accessing the first application's details
-    for app in applications:
-        print(f"Processing Application: {app}")
-    return app
-
-
 def Execute():
-    data = read_excel_data(sheet_name)
-    personal_information(driver, data)
-    employment_information(driver, data)
-    additional_information(driver, data)
-    next_screen = data.get('Next_Screen')  # Using .get() to avoid KeyError
-    if next_screen:
-        if next_screen == 'End':
-            print(f'Application creation has stopped on {sheet_name} screen')
-        else:
-            PageNavigator.navigate_screens(next_screen)
-    else:
-        print(f'Warning: "Next_Screen" column is missing in {sheet_name} sheet')
+    try:
+        data = ExcelLibrary.read_excel_data(sheet_name)
+        sleep(5)
+        personal_information(driver, data)
+        employment_information(driver, data)
+        additional_information(driver, data)
+        Utilities.next_screen(data.get('Next_Screen'), sheet_name)
 
+    except:
+        Utilities.take_screenshot(sheet_name, 'execute_error')
+        logging.error(f'Application creation failed at {sheet_name} screen')

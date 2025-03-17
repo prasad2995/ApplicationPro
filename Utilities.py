@@ -4,6 +4,9 @@ from time import sleep
 import logging
 import os
 import webbrowser
+from faker import Faker
+import GlobalVariables
+from Screens import PageNavigator
 
 # Generate timestamp
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -15,7 +18,7 @@ log_file = "execution_log.html"
 def take_screenshot(screen, type):
     sleep(1)
     # Create a timestamped directory if it doesn't exist
-    save_path = os.path.join(screenshot_path, timestamp)
+    save_path = os.path.join(screenshot_path, f"{timestamp}_{GlobalVariables.First_Name}_{GlobalVariables.Last_Name}")
     os.makedirs(save_path, exist_ok=True)  # Ensure directory exists
 
     # Find the next available number for naming
@@ -71,3 +74,22 @@ def generate_html_report():
     # Open the log file in the browser after execution
     webbrowser.open("execution_log.html")
 
+def next_screen(next_screen, sheet_name):
+    if next_screen:
+        if next_screen == 'End':
+            print(f'Application creation has stopped at {sheet_name} screen')
+        else:
+            PageNavigator.navigate_screens(next_screen)
+    else:
+        logging.warning(f'Warning: "Next_Screen" column is missing in {sheet_name} sheet')
+
+def randomName(name_type):
+    fake = Faker()
+
+    if name_type == 'firstname':
+        result = fake.first_name()
+    if name_type == 'lastname':
+        result = fake.last_name()
+
+    logging.info(f'The {name_type} is {result}')
+    return result

@@ -205,7 +205,7 @@ def closeLastOpenedWindow():
         logging.error(f'Failed to switch between windows - {e}')
 
 
-def signatue():
+def signature():
     try:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         sleep(5)
@@ -227,7 +227,7 @@ def signatue():
         actions.move_to_element_with_offset(canvas, 10, 10)  # Move to starting position
         actions.click_and_hold()  # Click and hold to simulate drawing
 
-        for i in range(20):  # Adjust iterations for more curves
+        for i in range(15):  # Adjust iterations for more curves
             actions.move_by_offset(15, -10)  # Move right-up
             actions.move_by_offset(10, 15)  # Move right-down
             actions.move_by_offset(-15, 10)  # Move left-down

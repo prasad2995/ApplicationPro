@@ -7,8 +7,10 @@ import GlobalVariables
 import IntializeDriver
 import Screens.PrimaryInsured as PrimaryInsured
 import Screens.PageNavigator as PageNavigator
+import Utilities
 
 driver = IntializeDriver.driver
+sheet_name = os.path.splitext(os.path.basename(__file__))[0]
 
 #xpaths
 next_button_xpath = "//span[text()='Choose Client']/..//parent::div//child::div//button[text()='Next']"
@@ -26,8 +28,20 @@ def create_application(driver, data):
         sleep(2)
         driver.find_element(By.XPATH, next_button_xpath).click()
         WebElements.wait_until_ele_load(driver, first_name_xpath)
-        WebElements.enter_text(driver, 'First Name', data['First_Name'])
-        WebElements.enter_text(driver, 'Last Name', data['Last_Name'])
+        # First Name
+        if data['First_Name'] == 'randomname':
+            First_Name = Utilities.randomName('firstname')
+            GlobalVariables.First_Name = First_Name
+            WebElements.enter_text(driver, 'First Name', First_Name)
+        else:
+            WebElements.enter_text(driver, 'First Name', data['First_Name'])
+        # Last Name
+        if data['Last_Name'] == 'randomname':
+            Last_Name = Utilities.randomName('lastname')
+            GlobalVariables.Last_Name = Last_Name
+            WebElements.enter_text(driver, 'Last Name', Last_Name)
+        else:
+            WebElements.enter_text(driver, 'Last Name', data['Last_Name'])
         WebElements.enter_text(driver, 'Birth Date', data['Birth_Date'])
         WebElements.select_value(driver, 'Gender', data['Gender'])
         driver.find_element(By.XPATH, next_button_xpath).click()
@@ -40,8 +54,11 @@ def create_application(driver, data):
         # WebElements.click_button(By.XPATH, 'Create Application ')
         driver.find_element(By.XPATH, "//button[text()='Create Application ']").click()
         sleep(5)
+        Utilities.take_screenshot(sheet_name, 'applicaton_submission')
+
     except Exception as e:
         print(f'Error: Failed at Create Application screen - {e}')
+        Utilities.take_screenshot(sheet_name, 'errors')
 
 def read_excel_data(sheet_name):
     try:
@@ -60,8 +77,6 @@ def read_excel_data(sheet_name):
 
 
 def Execute():
-    sheet_name = os.path.splitext(os.path.basename(__file__))[0]
     data = read_excel_data(sheet_name)
     create_application(driver, data)
     PageNavigator.navigate_screens(data['Next_Screen'])
-

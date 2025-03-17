@@ -12,27 +12,28 @@ import logging
 logging.basicConfig(level=logging.ERROR)
 
 driver = IntializeDriver.driver
+sheet_name = os.path.splitext(os.path.basename(__file__))[0]
 
-def add_existing_insurance(driver, data):
+def add_underwriting_questions(driver, data):
     try:
         if data['Underwriting Questions'] == 'Yes':
             WebElements.click_button(driver, 'Yes')
         elif data['Underwriting Questions'] == 'No':
             WebElements.click_button(driver, 'No')
         sleep(2)
+        Utilities.take_screenshot(sheet_name, 'add_underwriting_questions')
 
     except NoSuchElementException as e:
         logging.error(f'Error: Failed at selecting Underwriting Questions - {e}')
-
+        Utilities.take_screenshot(sheet_name, 'error')
 
 
 def Execute():
-    sheet_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
         data = ExcelLibrary.read_excel_data(sheet_name)
         WebElements.click_left_nav_menu(driver, 'Underwriting Questions')
         sleep(5)
-        add_existing_insurance(driver, data)
+        add_underwriting_questions(driver, data)
         next_screen = data.get('Next_Screen')  # Using .get() to avoid KeyError
         if next_screen:
             if next_screen == 'End':

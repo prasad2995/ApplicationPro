@@ -11,6 +11,7 @@ import IntializeDriver
 import logging
 logging.basicConfig(level=logging.ERROR)
 
+sheet_name = os.path.splitext(os.path.basename(__file__))[0]
 driver = IntializeDriver.driver
 complete_application_text = "All required information has been gathered. Please click continue to proceed with the application. "
 
@@ -24,9 +25,11 @@ def verify_complete_application():
         sleep(5)
         WebElements.closeLastOpenedWindow()
         WebElements.click_button(driver, 'Next')
+        Utilities.take_screenshot(sheet_name, 'verify_complete_application')
 
     except Exception as e:
         logging.error(f'Error: Failed at selecting Complete Application screen - {e}')
+        Utilities.take_screenshot(sheet_name, 'error')
 
 def signature(driver):
     try:
@@ -36,23 +39,26 @@ def signature(driver):
         sleep(2)
         WebElements.select_checkbox(driver,'I have read the Terms of Use and eSignature Consent', 'Yes')
         sleep(2)
-        WebElements.signatue()
+        WebElements.signature()
         WebElements.click_button(driver, 'Apply My Signature ')
         sleep(5)
         logging.info(f'Signed successfully')
         WebElements.click_button(driver, 'OK')
         sleep(2)
+        Utilities.take_screenshot(sheet_name, 'signature')
         WebElements.click_button(driver, 'Next')
 
     except Exception as e:
         logging.error(f'Failed a signature - {e}')
+        Utilities.take_screenshot(sheet_name, 'error')
 
 def agent_report():
     try:
         sleep(5)
         for i in range(4):
             sleep(1)
-            WebElements.click_button(driver, 'No')
+            WebElements.click_button(driver, f'No_{i+1}')
+        Utilities.take_screenshot(sheet_name, 'agent_report')
         sleep(2)
         WebElements.click_button(driver, 'Next')
         sleep(5)
@@ -64,19 +70,17 @@ def agent_report():
         WebElements.click_button(driver, 'Next')
         sleep(5)
         signature(driver)
+        sleep(5)
         WebElements.button_select_value(driver, 'Submit', 'Submit to Underwriting')
         sleep(20)
+        Utilities.take_screenshot(sheet_name, 'applicaton_submission')
         WebElements.click_button(driver, 'OK')
 
     except Exception as e:
         print(f"Error in agent_report: {e}")
-
-
-
-
+        Utilities.take_screenshot(sheet_name, 'error')
 
 def Execute():
-    sheet_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
         data = ExcelLibrary.read_excel_data(sheet_name)
         WebElements.click_left_nav_menu(driver, 'Complete Application')

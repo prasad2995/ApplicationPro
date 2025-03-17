@@ -12,10 +12,12 @@ import logging
 logging.basicConfig(level=logging.ERROR)
 
 driver = IntializeDriver.driver
+sheet_name = os.path.splitext(os.path.basename(__file__))[0]
 
 def add_payment_information(driver, data):
     try:
         WebElements.select_value(driver, 'Cash With Application', data['Cash With Application'])
+        Utilities.take_screenshot(sheet_name, 'add_payment_information')
         sleep(2)
 
     except NoSuchElementException as e:
@@ -23,7 +25,6 @@ def add_payment_information(driver, data):
 
 
 def Execute():
-    sheet_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
         data = ExcelLibrary.read_excel_data(sheet_name)
         WebElements.click_left_nav_menu(driver, 'Payment Information')

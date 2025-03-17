@@ -12,6 +12,7 @@ import logging
 logging.basicConfig(level=logging.ERROR)
 
 driver = IntializeDriver.driver
+sheet_name = os.path.splitext(os.path.basename(__file__))[0]
 
 def add_supplemental_forms(driver, data):
     try:
@@ -20,13 +21,14 @@ def add_supplemental_forms(driver, data):
         elif data['Supplemental Forms'] == 'No':
             print(f'Supplemental forms are not added')
         sleep(2)
+        Utilities.take_screenshot(sheet_name, 'add_supplemental_forms')
 
     except Exception as e:
         logging.error(f'Error: Failed at selecting Supplemental Forms - {e}')
+        Utilities.take_screenshot(sheet_name, 'error')
 
 
 def Execute():
-    sheet_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
         data = ExcelLibrary.read_excel_data(sheet_name)
         WebElements.click_left_nav_menu(driver, 'Supplemental Forms')

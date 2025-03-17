@@ -12,6 +12,7 @@ import logging
 logging.basicConfig(level=logging.ERROR)
 
 driver = IntializeDriver.driver
+sheet_name = os.path.splitext(os.path.basename(__file__))[0]
 
 def add_existing_insurance(driver, data):
     try:
@@ -20,9 +21,11 @@ def add_existing_insurance(driver, data):
         elif data['Physician Information'] == 'No':
             WebElements.click_button(driver, 'No')
         sleep(2)
+        Utilities.take_screenshot(sheet_name, 'add_existing_insurance')
 
     except NoSuchElementException as e:
         logging.error(f'Error: Failed at selecting Physician Information - {e}')
+        Utilities.take_screenshot(sheet_name, 'error')
 
 
 def Execute():
