@@ -32,7 +32,7 @@ def Execute():
     try:
         data = ExcelLibrary.read_excel_data(sheet_name)
         WebElements.click_left_nav_menu(driver, 'Underwriting Questions')
-        sleep(5)
+        sleep(2)
         add_underwriting_questions(driver, data)
         next_screen = data.get('Next_Screen')  # Using .get() to avoid KeyError
         if next_screen:

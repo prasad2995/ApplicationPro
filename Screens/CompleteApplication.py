@@ -33,7 +33,7 @@ def verify_complete_application():
 
 def signature(driver):
     try:
-        sleep(5)
+        sleep(2)
         WebElements.enter_text(driver, 'City', 'California')
         WebElements.select_value(driver, 'Signature Method', 'Mouse/Finger/Stylus')
         sleep(2)
@@ -41,7 +41,7 @@ def signature(driver):
         sleep(2)
         WebElements.signature()
         WebElements.click_button(driver, 'Apply My Signature ')
-        sleep(5)
+        sleep(3)
         logging.info(f'Signed successfully')
         WebElements.click_button(driver, 'OK')
         sleep(2)
@@ -61,19 +61,31 @@ def agent_report():
         Utilities.take_screenshot(sheet_name, 'agent_report')
         sleep(2)
         WebElements.click_button(driver, 'Next')
-        sleep(5)
+        sleep(3)
         WebElements.click_button(driver, 'Review Forms - Agent')
         WebElements.closeLastOpenedWindow()
         WebElements.click_button(driver, 'Next')
         sleep(2)
         # Attachements
         WebElements.click_button(driver, 'Next')
-        sleep(5)
+        sleep(3)
         signature(driver)
         sleep(5)
+    except Exception as e:
+        print(f"Error in agent_report: {e}")
+        Utilities.take_screenshot(sheet_name, 'error')
+
+def submitApplication(driver):
+    try:
         WebElements.button_select_value(driver, 'Submit', 'Submit to Underwriting')
-        sleep(20)
+        # sleep(20)
+        WebElements.wait_until_ele_load(driver, "//div[@id='dialog_title']")
         Utilities.take_screenshot(sheet_name, 'applicaton_submission')
+        submitResponse = WebElements.getText(driver, "//div[@id='dialog_desc']")
+        if submitResponse == 'Application submission successful':
+            logging.info(f'Application submitted successfully')
+        else:
+            logging.error(f'Application submission failed')
         WebElements.click_button(driver, 'OK')
 
     except Exception as e:
@@ -84,7 +96,7 @@ def Execute():
     try:
         data = ExcelLibrary.read_excel_data(sheet_name)
         WebElements.click_left_nav_menu(driver, 'Complete Application')
-        sleep(5)
+        sleep(1)
         verify_complete_application()
         signature(driver)
         agent_report()
@@ -96,7 +108,7 @@ def Execute():
                 PageNavigator.navigate_screens(next_screen)
         else:
             logging.warning(f'Warning: "Next_Screen" column is missing in {sheet_name} sheet')
-    except:
+    except Exception as e:
         Utilities.take_screenshot(sheet_name, 'execute_error')
-        logging.error(f'Application creation failed at {sheet_name} screen')
+        logging.error(f'Application creation failed at {sheet_name} screen - {e}')
 

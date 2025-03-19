@@ -28,7 +28,7 @@ def Execute():
     try:
         data = ExcelLibrary.read_excel_data(sheet_name)
         WebElements.click_left_nav_menu(driver, 'Payment Information')
-        sleep(5)
+        sleep(2)
         add_payment_information(driver, data)
         next_screen = data.get('Next_Screen')  # Using .get() to avoid KeyError
         if next_screen:

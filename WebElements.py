@@ -166,7 +166,7 @@ def button_select_value(driver, element_name, value):
 
 def click_left_nav_menu(driver, menu_name):
     try:
-        element = f"//li[@role='menuitem']//span[text()='{menu_name}']"
+        element = f"//a[@role='tab']//span[text()='{menu_name}']"
         element = driver.find_element(By.XPATH, element)
         actions.move_to_element(element).perform()
         element.click()
@@ -208,19 +208,15 @@ def closeLastOpenedWindow():
 def signature():
     try:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        sleep(5)
+        sleep(1)
         # Locate the canvas element
         canvas = driver.find_element(By.ID, "signature")
 
-        # element = "//button[@title='Apply My Signature ']"
-        # actions = ActionChains
-        # actions.move_to_element(element)
-
-        # Get canvas location and size
-        canvas_location = canvas.location
-        canvas_size = canvas.size
-        start_x = canvas_location['x'] + 10  # Offset to start within the canvas
-        start_y = canvas_location['y'] + 10  # Offset to start within the canvas
+        # # Get canvas location and size
+        # canvas_location = canvas.location
+        # canvas_size = canvas.size
+        # start_x = canvas_location['x'] + 10  # Offset to start within the canvas
+        # start_y = canvas_location['y'] + 10  # Offset to start within the canvas
 
         # Create an ActionChain for drawing
         actions = ActionChains(driver)
@@ -237,8 +233,16 @@ def signature():
         actions.perform()  # Execute the action
 
         # Wait and close browser (Optional)
-        sleep(3)
         logging.info(f'Signed successfully')
 
     except Exception as e:
         logging.error(f'Failed at signature - {e}')
+
+def getText(driver, element):
+    try:
+        text = driver.find_element(By.XPATH, element).text
+        logging.info(f'element {element} text is {text}')
+        return text
+
+    except Exception as e:
+        logging.error((f'Failed to get the text - {e}'))

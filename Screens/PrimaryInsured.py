@@ -79,7 +79,6 @@ def additional_information(driver, data):
 def Execute():
     try:
         data = ExcelLibrary.read_excel_data(sheet_name)
-        sleep(5)
         personal_information(driver, data)
         employment_information(driver, data)
         additional_information(driver, data)

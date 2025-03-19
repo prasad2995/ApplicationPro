@@ -29,7 +29,7 @@ def Execute():
     try:
         data = ExcelLibrary.read_excel_data(sheet_name)
         WebElements.click_left_nav_menu(driver, 'Payor')
-        sleep(5)
+        sleep(2)
         if GlobalVariables.payorIsInsured == 'Yes':
             Utilities.take_screenshot(sheet_name, 'add_payor')
             print(f'Payor is the insured')

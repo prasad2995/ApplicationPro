@@ -63,7 +63,7 @@ def Execute():
     try:
         data = ExcelLibrary.read_excel_data(sheet_name)
         WebElements.click_left_nav_menu(driver, 'Product Selection')
-        sleep(5)
+        sleep(2)
         product_selection(driver, data)
         product_information(driver, data)
         rider(driver, data)

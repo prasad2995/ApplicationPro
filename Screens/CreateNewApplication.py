@@ -1,3 +1,5 @@
+import logging
+
 from selenium.webdriver.common.by import By
 import pandas as pd
 import os
@@ -8,15 +10,16 @@ import IntializeDriver
 import Screens.PrimaryInsured as PrimaryInsured
 import Screens.PageNavigator as PageNavigator
 import Utilities
+import ExcelLibrary
 
 driver = IntializeDriver.driver
 sheet_name = os.path.splitext(os.path.basename(__file__))[0]
 
 #xpaths
-next_button_xpath = "//span[text()='Choose Client']/..//parent::div//child::div//button[text()='Next']"
+next_button_xpath = "//div[text()='Choose Client']/..//parent::div//child::div//button[text()='Next']"
 first_name_xpath = "//span[text()='First Name']/..//..//child::input"
 new_client_xpath = "//lf-radiobutton[@value='newClient']//child::span/.."
-signed_state_next_button_xpath = "//span[text()='Select Signed State']/..//parent::div//child::div//button[text()='Next']"
+signed_state_next_button_xpath = "//div[text()='Select Signed State']/..//parent::div//child::div//button[text()='Next']"
 
 #fuctions
 def create_application(driver, data):
@@ -28,20 +31,8 @@ def create_application(driver, data):
         sleep(2)
         driver.find_element(By.XPATH, next_button_xpath).click()
         WebElements.wait_until_ele_load(driver, first_name_xpath)
-        # First Name
-        if data['First_Name'] == 'randomname':
-            First_Name = Utilities.randomName('firstname')
-            GlobalVariables.First_Name = First_Name
-            WebElements.enter_text(driver, 'First Name', First_Name)
-        else:
-            WebElements.enter_text(driver, 'First Name', data['First_Name'])
-        # Last Name
-        if data['Last_Name'] == 'randomname':
-            Last_Name = Utilities.randomName('lastname')
-            GlobalVariables.Last_Name = Last_Name
-            WebElements.enter_text(driver, 'Last Name', Last_Name)
-        else:
-            WebElements.enter_text(driver, 'Last Name', data['Last_Name'])
+        WebElements.enter_text(driver, 'First Name', data['First_Name'])
+        WebElements.enter_text(driver, 'Last Name', data['Last_Name'])
         WebElements.enter_text(driver, 'Birth Date', data['Birth_Date'])
         WebElements.select_value(driver, 'Gender', data['Gender'])
         driver.find_element(By.XPATH, next_button_xpath).click()
@@ -53,6 +44,7 @@ def create_application(driver, data):
         sleep(2)
         # WebElements.click_button(By.XPATH, 'Create Application ')
         driver.find_element(By.XPATH, "//button[text()='Create Application ']").click()
+        # WebElements.click_button(driver, 'Create Application ')
         sleep(5)
         Utilities.take_screenshot(sheet_name, 'applicaton_submission')
 
@@ -60,23 +52,27 @@ def create_application(driver, data):
         print(f'Error: Failed at Create Application screen - {e}')
         Utilities.take_screenshot(sheet_name, 'errors')
 
-def read_excel_data(sheet_name):
-    try:
-        # Load the Excel sheet
-        df = pd.read_excel(GlobalVariables.excel_path, sheet_name)
-
-        # Convert each row to a dictionary and store in a list
-        applications = df.to_dict(orient='records')
-
-        # Example: Accessing the first application's details
-        for app in applications:
-            print(f"Processing Application: {app}")
-        return app
-    except Exception as e:
-        print(f'Error: Unable to read the data from excel - {e}')
+# def read_excel_data(sheet_name):
+#     try:
+#         # Load the Excel sheet
+#         df = pd.read_excel(GlobalVariables.excel_path, sheet_name)
+#
+#         # Convert each row to a dictionary and store in a list
+#         applications = df.to_dict(orient='records')
+#
+#         # Example: Accessing the first application's details
+#         for app in applications:
+#             print(f"Processing Application: {app}")
+#         return app
+#     except Exception as e:
+#         print(f'Error: Unable to read the data from excel - {e}')
 
 
 def Execute():
-    data = read_excel_data(sheet_name)
-    create_application(driver, data)
-    PageNavigator.navigate_screens(data['Next_Screen'])
+    try:
+        data = ExcelLibrary.read_excel_data(sheet_name)
+        create_application(driver, data)
+        PageNavigator.navigate_screens(data['Next_Screen'])
+
+    except Exception as e:
+        logging.error(f'failed at Create New Application screen - {e}')

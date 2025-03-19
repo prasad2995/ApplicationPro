@@ -41,7 +41,7 @@ def Execute():
     try:
         data = ExcelLibrary.read_excel_data(sheet_name)
         WebElements.click_left_nav_menu(driver, 'Owner')
-        sleep(5)
+        sleep(2)
         if GlobalVariables.ownerIsInsured == 'Yes':
             Utilities.take_screenshot(sheet_name, 'add_owner')
             print(f'Owner is the insured')

@@ -90,6 +90,10 @@ def randomName(name_type):
         result = fake.first_name()
     if name_type == 'lastname':
         result = fake.last_name()
+    if name_type == 'address':
+        result = fake.address()
+    if name_type == 'address':
+        result = fake.postcode()
 
     logging.info(f'The {name_type} is {result}')
     return result
